@@ -85,7 +85,7 @@
             $('#form-patente').submit(function (event) {
                 event.preventDefault(); // Prevenir el comportamiento por defecto del formulario
 
-                var patente = $('#patenteInput').val();
+                var patente = $('#patenteInput').val().toUpperCase();
                 if (patente) {
                     // Guardar la patente en localStorage
                     
