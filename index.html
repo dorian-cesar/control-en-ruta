@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control-En Ruta</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <style>
+        .container {
+            margin-top: 50px;
+        }
+
+        .btn-custom {
+            margin-top: 20px;
+        }
+
+        h1 {
+            margin-bottom: 30px;
+        }
+
+        #buttons-container {
+            display: none;
+            margin-top: 20px;
+        }
+
+        button {
+            margin-top: 10px;
+            width: 100%;
+        }
+        .container {
+            width: 370px;
+        }
+        footer {
+            display: flex;
+            justify-content: center;
+            margin: auto;
+            margin-top: 20px;
+            
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container text-center">
+        <div class="contenedor-img">
+            <img src="assets/img/Logo.svg" alt="">
+        </div>
+        <h1>Bienvenido</h1>
+        <h2 id="patente-label">Ingrese el número de patente del bus</h2>
+        <form id="form-patente">
+            <div class="form-group">
+                <input type="text" class="form-control mt-3" id="patenteInput" placeholder="Ingrese número de patente AAAA-XX">
+            </div>
+            <button type="submit" class="btn btn-primary">Enviar</button>
+        </form>
+        <div id="buttons-container">
+            <button id="btn1" class="btn btn-primary btn-custom">Ir a Control de Jornada</button>
+            <button id="btn2" class="btn btn-success btn-custom">Ir a Venta Tickets </button>
+            <button id="btn3" class="btn btn-danger btn-custom">Ir a Manifiesto del Bus</button>
+        </div>
+    </div>
+    <footer>
+        <img src="./assets/img/bus2.JPG" alt="Bus Image" style="max-width: 100%; height: auto;">
+    </footer>
+
+    <!-- jQuery y Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            // Mostrar el formulario al cargar la página
+            $('#form-patente').show();
+
+            // Verificar si hay una patente guardada en localStorage
+            var savedPatente = localStorage.getItem('busPatente');
+
+            
+            // Manejar el envío del formulario
+            $('#form-patente').submit(function (event) {
+                event.preventDefault(); // Prevenir el comportamiento por defecto del formulario
+
+                var patente = $('#patenteInput').val();
+                if (patente) {
+                    // Guardar la patente en localStorage
+                    
+                    localStorage.setItem('busPatente', patente);
+                    // Ocultar el formulario y mostrar los botones
+                    $('#patente-label').hide();
+                    $('#form-patente').hide();
+                    $('#buttons-container').show();
+                } else {
+                    alert('Por favor, ingrese un número de patente.');
+                }
+            });
+
+            function redirectTo(url, patente) {
+                window.location.href = url + '?patente=' + encodeURIComponent(patente);
+            }
+
+            $('#btn1').click(function () {
+                var patente = localStorage.getItem('busPatente');
+                redirectTo('https://job-controller.netlify.app/', patente);
+            });
+
+            $('#btn2').click(function () {
+                var patente = localStorage.getItem('busPatente');
+                redirectTo('https://ventas-mobil.netlify.app/venta.html', patente);
+            });
+
+            $('#btn3').click(function () {
+                var patente = localStorage.getItem('busPatente');
+                redirectTo('https://interurbano.wit.la/mainfiesto/', patente);
+            });
+        });
+    </script>
+</body>
+
+
+</html>
