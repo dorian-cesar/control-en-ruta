@@ -61,7 +61,7 @@
             <button id="btn1" class="btn btn-primary btn-custom">Ir a Control de Jornada</button>
             <button id="btn2" class="btn btn-success btn-custom">Ir a Venta Tickets </button>
             <button id="btn3" class="btn btn-danger btn-custom">Ir a Manifiesto del Bus</button>
-            <button id="btn4" class="btn btn-warning btn-custom">Ir a Inicio/Termino de Conducción</button>
+            <button id="btn4" class="btn btn-secondary btn-custom">Ir a Inicio/Termino de Conducción</button>
         </div>
     </div>
     <footer>
@@ -121,7 +121,7 @@
 
             $('#btn4').click(function () {
                 var patente = localStorage.getItem('busPatente');
-                redirectTo('https://interurbano.wit.la/inicio-salida-Jornada/', patente);
+                redirectTo('https://interurbano.wit.la/control-inicio-termino-Jornada/', patente);
             });
         });
     </script>
