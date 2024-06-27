@@ -24,23 +24,33 @@
 
         #buttons-container {
             display: none;
-       
+
         }
 
         button {
             margin-top: 5px;
-          
+
             width: 100%;
         }
+
         .container {
             width: 370px;
         }
+
         img {
             display: flex;
             justify-content: center;
             margin: auto;
             margin-top: 10px;
-            
+
+        }
+
+        #loader {
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1000;
         }
     </style>
 </head>
@@ -54,15 +64,18 @@
         <h2 id="patente-label">Ingrese el número de patente del bus</h2>
         <form id="form-patente">
             <div class="form-group">
-                <input type="text" class="form-control mt-3" id="patenteInput" placeholder="Ingrese número de patente AAAA-XX">
+                <select class="form-control mt-3" id="patenteInput">
+                    <option value="">Seleccione número de patente</option>
+                </select>
             </div>
             <button type="submit" class="btn btn-primary">Enviar</button>
         </form>
         <div id="buttons-container">
             <button id="btn1" class="btn btn-primary btn-custom">Reporte de conducción (5 min)</button>
-            <button id="btn2" class="btn btn-success btn-custom">Venta de  Tickets </button>
+            <button id="btn2" class="btn btn-success btn-custom">Venta de Tickets </button>
             <button id="btn3" class="btn btn-danger btn-custom">Listado de pasajeros on-board</button>
             <button id="btn4" class="btn btn-secondary btn-custom">Control de jornada</button>
+            <button id="btn5" class="btn btn-warning btn-custom">Salir</button>
         </div>
         <img src="./assets/img/bus2.JPG" alt="Bus Image" style="max-width: 100%; height: auto;">
     </div>
@@ -78,27 +91,68 @@
             // Mostrar el formulario al cargar la página
             $('#form-patente').show();
 
+            function showLoader() {
+                $('#loader').show();
+            }
+
+            // Función para ocultar el loader
+            function hideLoader() {
+                $('#loader').hide();
+            }
+
+            // Función para obtener datos de la API y llenar el select
+            function populatePatenteSelect() {
+                showLoader();
+                $.ajax({
+                    url: 'https://control-jornada.wit.la/backend-control-jornada/public/api/gpslist',
+                    method: 'GET',
+                    success: function (data) {
+                        hideLoader();
+                        var patenteSelect = $('#patenteInput');
+                        data.forEach(function (item) {
+                            var option = $('<option></option>')
+                                .attr('value', item.label)
+                                .text(item.label);
+                            patenteSelect.append(option);
+                        });
+                    },
+                    error: function (error) {
+                        hideLoader();
+                        console.error('Error al obtener los datos de la API', error);
+                    }
+                });
+            }
+
+            // Llamar a la función para llenar el select
+            populatePatenteSelect();
+
             // Verificar si hay una patente guardada en localStorage
             var savedPatente = localStorage.getItem('busPatente');
+            if (!savedPatente) {
 
-            
-            // Manejar el envío del formulario
-            $('#form-patente').submit(function (event) {
-                event.preventDefault(); // Prevenir el comportamiento por defecto del formulario
+                // Manejar el envío del formulario
+                $('#form-patente').submit(function (event) {
+                    event.preventDefault(); // Prevenir el comportamiento por defecto del formulario
 
-                var patente = $('#patenteInput').val().toUpperCase();
-                if (patente) {
-                    // Guardar la patente en localStorage
-                    
-                    localStorage.setItem('busPatente', patente);
-                    // Ocultar el formulario y mostrar los botones
-                    $('#patente-label').hide();
-                    $('#form-patente').hide();
-                    $('#buttons-container').show();
-                } else {
-                    alert('Por favor, ingrese un número de patente.');
-                }
-            });
+                    var patente = $('#patenteInput').val().toUpperCase();
+                    if (patente) {
+                        // Guardar la patente en localStorage
+
+                        localStorage.setItem('busPatente', patente);
+                        // Ocultar el formulario y mostrar los botones
+                        $('#patente-label').hide();
+                        $('#form-patente').hide();
+                        $('#buttons-container').show();
+                    } else {
+                        alert('Por favor, ingrese un número de patente.');
+                    }
+                });
+
+            } else {
+                $('#patente-label').hide();
+                $('#form-patente').hide();
+                $('#buttons-container').show();
+            }
 
             function redirectTo(url, patente) {
                 window.location.href = url + '?patente=' + encodeURIComponent(patente);
@@ -122,6 +176,11 @@
             $('#btn4').click(function () {
                 var patente = localStorage.getItem('busPatente');
                 redirectTo('https://interurbano.wit.la/control-inicio-termino-Jornada/', patente);
+            });
+
+            $('#btn5').click(function () {
+                localStorage.removeItem('busPatente');
+                location.reload();
             });
         });
     </script>
