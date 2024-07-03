@@ -189,7 +189,8 @@
 
             $('#btn1').click(function () {
                 var patente = localStorage.getItem('busPatente');
-                redirectTo('https://job-controller.netlify.app/', patente);
+                var conductor = localStorage.getItem('busConductor');
+                redirectTo('https://job-controller.netlify.app/', patente, conductor);
             });
 
             $('#btn2').click(function () {
