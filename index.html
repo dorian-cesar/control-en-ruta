@@ -67,6 +67,9 @@
                 <select class="form-control mt-3" id="patenteInput">
                     <option value="">Seleccione número de patente</option>
                 </select>
+                <select class="form-control mt-3" id="conductorInput">
+                    <option value="">Seleccione Conductor</option>
+                </select>
             </div>
             <button type="submit" class="btn btn-primary">Enviar</button>
         </form>
@@ -122,6 +125,28 @@
                     }
                 });
             }
+            $.ajax({
+                url: 'https://control-jornada.wit.la/backend-control-jornada/public/api/openconductores',
+                method: 'GET',
+                success: function (response) {
+                    var conductores = response;
+                  
+                    var selectRut = $('#conductorInput');
+
+                    conductores.forEach(function (conductor) {
+                        const option = $('<option></option>')
+                            .val(conductor.rut)
+                            .text(conductor.nombre);
+                        selectRut.append(option);
+                        
+                    });
+                },
+                error: function (error) {
+                    console.error('Error fetching conductors:', error);
+                }
+            });
+
+
 
             // Llamar a la función para llenar el select
             populatePatenteSelect();
@@ -135,17 +160,20 @@
                     event.preventDefault(); // Prevenir el comportamiento por defecto del formulario
 
                     var patente = $('#patenteInput').val().toUpperCase();
-                    if (patente) {
+                    var conductor = $('#conductorInput').val();
+                    if (patente && conductor) {
                         // Guardar la patente en localStorage
 
                         localStorage.setItem('busPatente', patente);
+                        localStorage.setItem('busConductor', conductor);
                         // Ocultar el formulario y mostrar los botones
                         $('#patente-label').hide();
                         $('#form-patente').hide();
                         $('#buttons-container').show();
                     } else {
-                        alert('Por favor, ingrese un número de patente.');
+                        alert('Debe ingresar la Patente y el Conductor.');
                     }
+                     
                 });
 
             } else {
@@ -154,8 +182,9 @@
                 $('#buttons-container').show();
             }
 
-            function redirectTo(url, patente) {
-                window.location.href = url + '?patente=' + encodeURIComponent(patente);
+            function redirectTo(url, patente,conductor) {
+                console.log(conductor);
+                window.location.href = url + '?patente=' + encodeURIComponent(patente) + '&conductor=' + encodeURIComponent(conductor);
             }
 
             $('#btn1').click(function () {
@@ -175,11 +204,13 @@
 
             $('#btn4').click(function () {
                 var patente = localStorage.getItem('busPatente');
-                redirectTo('https://interurbano.wit.la/control-inicio-termino-Jornada/', patente);
+                var conductor = localStorage.getItem('busConductor');
+                redirectTo('https://interurbano.wit.la/control-inicio-termino-Jornada/', patente, conductor);
             });
 
             $('#btn5').click(function () {
                 localStorage.removeItem('busPatente');
+                localStorage.removeItem('busConductor');
                 location.reload();
             });
         });
